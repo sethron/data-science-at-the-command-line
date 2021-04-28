@@ -1,14 +1,20 @@
-.PHONY: 1e 2e redirects live publish-draft publish-production sync-atlas asciidoc
+.PHONY: clean 1e 2e redirects live publish-draft publish-production sync-atlas asciidoc hugo
 .SUFFIXES:
 
 .ONESHELL:
 SHELL = /usr/bin/env bash -o pipefail
 .SHELLFLAGS = -e
 
-1e: www/static/1e/index.html
+clean:
+	rm -f book/2e/book.md
+
+live:
+	cd www && hugo server --disableFastRender
 
 2e: book/2e/*.Rmd
 	cd book/2e && rm -f book.md && Rscript --vanilla -e 'bookdown::render_book("index.Rmd", encoding = "UTF-8", clean = FALSE)'
+
+1e: www/static/1e/index.html
 
 redirects: www/static/_redirects
 
@@ -25,25 +31,77 @@ www/static/_redirects:
 	uniq | \
 	sed -E "s|(.*)|/\1 /1e/\1|" > $@
 
-live:
-	cd www && hugo server --disableFastRender
+hugo:
+	(cd www && hugo) && \
+	(cd book/2e/data && zip data */*) && \
+	mv book/2e/data/data.zip www/static/2e/
 
-publish-draft:
-	(cd www && hugo) && netlify deploy --dir www/public
+publish-draft: hugo
+	netlify deploy --dir www/public
 
-publish-production:
-	(cd www && hugo) && netlify deploy --prod --dir www/public
+publish-production: hugo
+	netlify deploy --prod --dir www/public
 
 book/2e/%.utf8.md: book/2e/%.Rmd
 	cd book/2e && Rscript --vanilla -e 'bookdown::render_book("$*.Rmd", encoding = "UTF-8", preview = TRUE, clean = FALSE)'
 
-chapter-%: book/2e/%.utf8.md
+ch01: book/2e/01.utf8.md
+ch02: book/2e/02.utf8.md
+ch03: book/2e/03.utf8.md
+ch04: book/2e/04.utf8.md
+ch05: book/2e/05.utf8.md
+ch06: book/2e/06.utf8.md
+ch07: book/2e/07.utf8.md
+ch08: book/2e/08.utf8.md
+ch09: book/2e/09.utf8.md
+ch10: book/2e/10.utf8.md
+ch11: book/2e/11.utf8.md
+
+ch%: book/2e/%.utf8.md
 
 book/2e/atlas/ch%.asciidoc: book/2e/%.utf8.md
 	< $< book/2e/bin/atlas.sh > $@
 
-asciidoc: book/2e/atlas/ch*.asciidoc
+asciidoc: book/2e/atlas/ch00.asciidoc book/2e/atlas/ch01.asciidoc book/2e/atlas/ch02.asciidoc book/2e/atlas/ch03.asciidoc book/2e/atlas/ch04.asciidoc book/2e/atlas/ch05.asciidoc book/2e/atlas/ch06.asciidoc book/2e/atlas/ch07.asciidoc book/2e/atlas/ch08.asciidoc book/2e/atlas/ch11.asciidoc
 
 sync-atlas: asciidoc
-	@cp book/2e/atlas/*.asciidoc ../../atlas/data-science-at-the-command-line-2e/
+	@cp -v book/2e/atlas/*.asciidoc ../../atlas/data-science-at-the-command-line-2e/
+	@cp -v book/2e/images/* ../../atlas/data-science-at-the-command-line-2e/images
 	@echo "Syncing Asciidoc files to Atlas"
+
+docker-run:
+	docker run -it --rm -v $$(pwd)/book/2e/data:/data -p 8000:8000 datasciencetoolbox/dsatcl2e:latest
+
+update-cache:
+	cd book/2e/data/cache && \
+  curl -sL 'https://github.com/r-dbi/RSQLite/raw/master/inst/db/datasets.sqlite' -O && \
+  ls -lAshF
+
+attach:
+	tmux set-option window-size manual &&\
+	tmux attach -t knitractive_console
+
+ref-bib-names:
+	cat book/2e/tools.bib | grep -E '^@' | tr '{' , | cut -d , -f 2
+
+ref-bib-titles:
+	cat book/2e/tools.bib | grep -E '^@' | tr '{' , | cut -d , -f 2
+
+ref-text-all:
+	grep -noE '\[@([^]]+)\]' book/2e/*.Rmd | column -s ':' -t
+
+ref-text-num-per-chapter:
+	@ggrep -oE '\[@([^]]+)\]' book/2e/*.Rmd | sort | uniq -c
+
+ref-text-duplicate-per-chapter:
+	@make ref-text-num-per-chapter | grep -v '1 '
+
+ref-tools-per-chapter:
+	@ggrep -oE ' `[A-Za-z]+`' book/2e/*.Rmd | sort | uniq | tr -d '` ' | tr ':' '\t' | sort -k 2
+
+
+
+
+
+
+ref-check: ref-text-duplicate-per-chapter

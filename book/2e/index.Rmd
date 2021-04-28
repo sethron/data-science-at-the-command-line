@@ -5,7 +5,8 @@ date: "`r gsub(' 0', ' ', format(Sys.Date(), '%B %d, %Y'))`"
 site: bookdown::bookdown_site
 documentclass: book
 bibliography: [library.bib, tools.bib]
-biblio-style: apalike
+notes-after-punctuation: false
+suppress-bibliography: true
 nocite: |
   @Schutt2013, @Peek2002, @Heddings2006, @Molinaro2005, @HTTP, @docopt, @Rossant2013, @manpages, @Raymond2003, @Goyvaerts2012, @Dougherty1997, @Tange2011a, @Cortez2009, @commandlinefu, @Cooper2014, @Russell2013, @Warden2011
 link-citations: yes
@@ -16,4 +17,4 @@ github-repo: "jeroenjanssens/data-science-at-the-command-line"
 
 # Welcome {-}
 
-The second edition of Data Science at the Command Line is currently under construction. It is scheduled to be published by O’Reilly Media in October 2021. You’re welcome to take a look around.
+The second edition of Data Science at the Command Line is currently being written. It is scheduled to be published by O’Reilly Media in October 2021. You’re welcome to take a look around.

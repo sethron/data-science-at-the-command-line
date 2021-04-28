@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Merriweather+Sans:400,400i,700,700i|Merriweather:400,400i,700,700i|Ubuntu+Mono:400,400i,500,500i');
+@import url('https://fonts.googleapis.com/css?family=Merriweather+Sans:400,400i,700,700i|Merriweather:400,400i,700,700i|Source+Code+Pro:400,400i,600,600i|Noto+Sans+JP:900');
 
 h1, h2, h3, h4, h5, h6, .book-summary {
   font-family: 'Merriweather Sans', sans-serif;
@@ -66,17 +66,38 @@ p.caption {
 }
 
 pre, code {
-  font-family: 'Ubuntu Mono', monospace !important;
-  line-height: 1.2;
+  font-family: 'Source Code Pro', monospace !important;
+  line-height: 1.3;
+  font-size: 0.94em;
+}
+
+.callout {
+  font-family: 'Noto Sans JP' !important;
+  font-weight: 900;
+  margin-top: -0.5em !important;
+  margin-bottom: -0.2em !important;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+pre .callout {
+  color: #93a1a1 !important;
+  font-size: 1.0em !important;
+}
+
+p .callout {
+  margin-right: 1em !important;
 }
 
 p code {
   white-space: inherit;
 }
+
 pre {
   word-break: normal;
   word-wrap: normal;
 }
+
 pre code {
   white-space: inherit;
 }
@@ -117,14 +138,15 @@ blockquote > p:first-child {
   font-style: italic;
 }
 
-
 pre {
   white-space: pre !important;
+  background-color: #002b36 !important;
+  color: #839496 !important;
 }
 
-.highlight, pre { background-color: #fdf6e3 !important; color: #586e75}
-.highlight .c { color: #93a1a1 } /* Comment */
-.highlight .err { color: #586e75 } /* Error */
+/* .highlight, pre { background-color: #fdf6e3 !important; color: #586e75} */
+.highlight .c { color: #859900 } /* Comment */
+.highlight .err { color: #dc322f } /* Error */
 .highlight .g { color: #586e75 } /* Generic */
 .highlight .k { color: #859900 } /* Keyword */
 .highlight .l { color: #586e75 } /* Literal */
@@ -132,17 +154,17 @@ pre {
 .highlight .o { color: #859900 } /* Operator */
 .highlight .x { color: #cb4b16 } /* Other */
 .highlight .p { color: #586e75 } /* Punctuation */
-.highlight .cm { color: #93a1a1 } /* Comment.Multiline */
+.highlight .cm { color: #859900 } /* Comment.Multiline */
 .highlight .cp { color: #859900 } /* Comment.Preproc */
-.highlight .c1 { color: #93a1a1 } /* Comment.Single */
+.highlight .c1 { color: #859900 } /* Comment.Single */
 .highlight .cs { color: #859900 } /* Comment.Special */
 .highlight .gd { color: #2aa198 } /* Generic.Deleted */
 .highlight .ge { color: #586e75; font-style: italic } /* Generic.Emph */
 .highlight .gr { color: #dc322f } /* Generic.Error */
 .highlight .gh { color: #cb4b16 } /* Generic.Heading */
 .highlight .gi { color: #859900 } /* Generic.Inserted */
-.highlight .go { color: #586e75 } /* Generic.Output */
-.highlight .gp { color: #586e75 } /* Generic.Prompt */
+.highlight .go { color: #93a1a1 } /* Generic.Output */
+.highlight .gp { color: #586e75; font-style: bold } /* Generic.Prompt */
 .highlight .gs { color: #586e75; font-weight: bold } /* Generic.Strong */
 .highlight .gu { color: #cb4b16 } /* Generic.Subheading */
 .highlight .gt { color: #586e75 } /* Generic.Traceback */
@@ -193,3 +215,12 @@ pre {
 .highlight .il { color: #2aa198 } /* Literal.Number.Integer.Long */
 
 
+.highlight .gp, pre .callout {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: default;
+}
