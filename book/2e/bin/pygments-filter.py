@@ -27,7 +27,41 @@ callout_text_re = re.compile(r'<([0-9]{1,2})>')
 comment_adoc_re = re.compile(r'<!--A(.*)A-->', re.MULTILINE|re.DOTALL)
 comment_html_re = re.compile(r'<!--H(.*)H-->', re.MULTILINE|re.DOTALL)
 
+FIG_COUNTER = 0
+CHAPTER_NUM = None
+
 def pygments(key, value, format, _):
+
+    global FIG_COUNTER
+    global CHAPTER_NUM
+
+    # Used for figure log
+    if format == "muse":
+
+        if key == "Header":
+            level = value[0]
+            if level == 1:
+                try:
+                    CHAPTER_NUM = int(value[1][0].split("-")[1])
+                    FIG_COUNTER = 0
+                except:
+                    pass
+
+        if key == "Div":
+            [[ident, classes, keyvals], code] = value
+            div_type = classes[0]
+
+            if div_type == "figure":
+                FIG_COUNTER += 1
+                fig_id = code[2]["c"][0]["c"].split(")")[0][2:]
+                html = code[0]["c"][0]["c"][1]
+                _, src, _, alt, *_ = html.split("\"")
+                src = src.split("/")[-1]
+                redraw = "Redraw" if src.startswith("diagram_") else "Use as-is"
+                stderr.write(f"{CHAPTER_NUM},{FIG_COUNTER},Yes,\"N/A\",{src},{redraw},\"{alt}\"\n")
+
+        return None
+
 
     if format == "asciidoc":
 
@@ -41,8 +75,8 @@ def pygments(key, value, format, _):
 
         # Fix references to figures
         if (key == "Str") and value.startswith("@ref"):
-            # stderr.write(f"{key}\t{value}\n")
-            _, ref_type, ref_id, _ = re.split("\(|:|\)", value)
+            #stderr.write(f"{key}\t{value}\n")
+            _, ref_type, ref_id, *_ = re.split("\(|:|\)", value)
             return Str(f"<<{ref_type}:{ref_id}>>")
 
         elif key == "Div":
@@ -82,7 +116,9 @@ def pygments(key, value, format, _):
 
         # Insert "Figure" or "Example" in front of internal references
         if (key == "Str") and value.startswith("@ref"):
-            _, ref_type, ref_id, _ = re.split("\(|:|\)", value)
+            # stderr.write(f"{key}\t{value}\n")
+            _, ref_type, ref_id, *_ = re.split("\(|:|\)", value)
+            # stderr.write(f"REF: {ref_type}\t{ref_id}\n")
             return Str(f"{REF_TYPE[ref_type]} {value}")
 
         elif key == "CodeBlock":
